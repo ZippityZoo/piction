@@ -1,23 +1,23 @@
 import { useEffect, useRef } from "react";
 import { useState } from "react";
 import './App.css';
-
+//Fix refresh on drag down
+//fix size to be right
 function MobileCanvas(){
     const canvasRefrence = useRef(null);
     const contextRefrence = useRef(null);
     const [isPressed,setIsPresssed] = useState(false);
-    const width = 400;
-    const height = 650;
+    const width = 500;
+    const height = 850;
     const beginDraw = (event) => {
         const touchEvent = event.targetTouches[0]
         contextRefrence.current.beginPath();
         contextRefrence.current.moveTo(touchEvent.clientX,touchEvent.clientY);
         setIsPresssed(true);
-        
+        console.log(event);
     };
     const moveDraw = (event) => {
         const touchEvent = event.targetTouches[0]
-        console.log("O");
         if(!isPressed){
             return;
         }
@@ -25,12 +25,12 @@ function MobileCanvas(){
         contextRefrence.current.stroke();
     };
     const endDraw = () => {
-        console.log("D");
         contextRefrence.current.closePath();
         setIsPresssed(false);
         
     };
     useEffect(() => {
+        document.body.style.overflow = "hidden"
         const handleOutsideEvent  = (touchEvent) => {
             if(canvasRefrence.current && !canvasRefrence.current.contains(touchEvent.target)){
                     endDraw();
