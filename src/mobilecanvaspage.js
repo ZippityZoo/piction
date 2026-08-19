@@ -7,8 +7,8 @@ function MobileCanvas(){
     const canvasRefrence = useRef(null);
     const contextRefrence = useRef(null);
     const [isPressed,setIsPresssed] = useState(false);
-    const width = 500;
-    const height = 850;
+    const width = 485;
+    const height = 825;
     const beginDraw = (event) => {
         const touchEvent = event.targetTouches[0]
         contextRefrence.current.beginPath();
