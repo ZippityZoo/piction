@@ -1,6 +1,7 @@
 import './App.css';
-import MobileCanvas from "./mobilecanvaspage";
-
+import Host from './Host';
+//import Client from './Host';
+//import MobileCanvas from "./mobilecanvaspage";
 function App() {
 
   document.body.style.overflow = "hidden"
@@ -8,7 +9,7 @@ function App() {
   return (
     <div>
 
-    <MobileCanvas/>
+    <Host/>
     </div>
   );
 }

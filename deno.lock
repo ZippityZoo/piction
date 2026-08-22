@@ -1,0 +1,27 @@
+{
+  "version": "5",
+  "specifiers": {
+    "jsr:@deno/installer-shell-setup@*": "0.3.4"
+  },
+  "jsr": {
+    "@deno/installer-shell-setup@0.3.4": {
+      "integrity": "48665d1a737d487cce6874bc97bba70a5aeffa7053aca3f60df93c6fab8963b4"
+    }
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@testing-library/dom@^10.4.1",
+        "npm:@testing-library/jest-dom@^6.9.1",
+        "npm:@testing-library/react@^16.3.2",
+        "npm:@testing-library/user-event@^13.5.0",
+        "npm:gh-pages@^6.3.0",
+        "npm:immutable@^5.1.9",
+        "npm:react-dom@^19.2.8",
+        "npm:react-scripts@5.0.1",
+        "npm:react@^19.2.8",
+        "npm:web-vitals@^2.1.4"
+      ]
+    }
+  }
+}
