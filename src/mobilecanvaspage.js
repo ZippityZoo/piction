@@ -60,7 +60,7 @@ function MobileCanvas(){
         context.lineWidth = 5;
         contextRefrence.current = context;
     },[]);
-
+    //user
     return(
         <div >
             <canvas 
