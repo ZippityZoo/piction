@@ -9,13 +9,17 @@ function MobileCanvas(){
     const [isPressed,setIsPresssed] = useState(false);
     const width = 485;
     const height = 825;
-    
+    const  drawUpdate = [];
+
+
+    //take draw data and copy it to hosts multiple canvases
+
     const beginDraw = (event) => {
         const touchEvent = event.targetTouches[0]
         contextRefrence.current.beginPath();
         contextRefrence.current.moveTo(touchEvent.clientX,touchEvent.clientY);
         setIsPresssed(true);
-        console.log(event);
+        drawUpdate.push({"begin":touchEvent});
     };
     const moveDraw = (event) => {
         const touchEvent = event.targetTouches[0]
@@ -24,11 +28,13 @@ function MobileCanvas(){
         }
         contextRefrence.current.lineTo(touchEvent.clientX,touchEvent.clientY);
         contextRefrence.current.stroke();
+        drawUpdate.push({"moving":touchEvent});
     };
     const endDraw = () => {
         contextRefrence.current.closePath();
         setIsPresssed(false);
-        
+        drawUpdate.push({"end":isPressed});
+        console.log(drawUpdate);
     };
     useEffect(() => {
         document.body.style.overflow = "hidden"
@@ -54,11 +60,13 @@ function MobileCanvas(){
         context.lineWidth = 5;
         contextRefrence.current = context;
     },[]);
+
     return(
         <div >
             <canvas 
             className={"player"}
             ref={canvasRefrence}
+            id={"cv"}
             onTouchStart={beginDraw}
             onTouchMove={moveDraw}
             onTouchEnd={endDraw}
