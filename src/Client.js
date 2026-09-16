@@ -1,31 +1,32 @@
-import {useEffect} from 'react';
+import {useEffect,useState,useRef} from 'react';
+import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket.js';
 import MobileCanvas from './mobilecanvaspage.js';
-import useWebsocket from 'react-use-websocket';
+//import {io} from 'socket.io-client';
 
+//const event = new Event('draw');
 
-function Client(){
+function Client({username}){
+    const [canvasPageData,setCanvasPageData] = useState("");
+    const sendPageData = (clientData) => {
+        //client data is right and not empty same with canvasPageData
+
+        setCanvasPageData(clientData);
+        
+    }
     const WS_URL = 'ws://localhost:8080'
-    const {sendJsonMessage} = useWebsocket(WS_URL,{
+    const {sendJsonMessage} = useWebSocket(WS_URL,{
         queryParams:{username}
-    })
-    var username;
-    useEffect(() =>{
-        //ip 192.168.1.124
-        const ws = new WebSocket("ws://localhost:8080");
-        ws.onopen = () => {
-            console.log('ws opened');
-        }  
-        ws.send = () =>{
-            console.log("Yo mama");
-        }
-        //notifies when the server shuts down
-        ws.onclose = () => {
-            console.log('ws closed');
-        }
-
     });
+    const sendDrawingJsonMessage = useRef(sendJsonMessage);
+    
+    useEffect(() =>{
+            sendDrawingJsonMessage.current({
+                message:canvasPageData
+            });
+        
+    },[canvasPageData]);
     return(
-        <MobileCanvas/>
+        <MobileCanvas drawData={sendPageData}/>
     );
 }
 

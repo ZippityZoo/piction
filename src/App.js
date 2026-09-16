@@ -9,7 +9,7 @@ function App() {
   document.body.style.overflow = "hidden"
   //needsome 
   if(username === "RAQ"){
-    return <Host/>;
+    return <Host />;
   }else if(username){
     return <Client username={username} />;
   }else{

@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import { useState } from "react";
 import './App.css';
+
 //Fix refresh on drag down
 //fix size to be right
-function MobileCanvas(){
+function MobileCanvas({drawData}){
+    //Canvas Draw Info
     const canvasRefrence = useRef(null);
     const contextRefrence = useRef(null);
     const [isPressed,setIsPresssed] = useState(false);
@@ -11,8 +13,11 @@ function MobileCanvas(){
     const height = 825;
     const  drawUpdate = [];
 
-
+    
     //take draw data and copy it to hosts multiple canvases
+    const sendToClient = () => {
+        drawData(drawUpdate);
+    }
 
     const beginDraw = (event) => {
         const touchEvent = event.targetTouches[0]
@@ -28,13 +33,14 @@ function MobileCanvas(){
         }
         contextRefrence.current.lineTo(touchEvent.clientX,touchEvent.clientY);
         contextRefrence.current.stroke();
-        drawUpdate.push({"moving":touchEvent});
+        drawUpdate.push({"moving":[touchEvent.clientX,touchEvent.clientY]});
     };
     const endDraw = () => {
         contextRefrence.current.closePath();
         setIsPresssed(false);
         drawUpdate.push({"end":isPressed});
-        console.log(drawUpdate);
+        sendToClient(drawUpdate);
+        
     };
     useEffect(() => {
         document.body.style.overflow = "hidden"
@@ -47,7 +53,8 @@ function MobileCanvas(){
             return () => {
             document.removeEventListener("touchmove", handleOutsideEvent);
         };
-    },[canvasRefrence]);
+        
+    },[canvasRefrence,endDraw]);
     
     useEffect (() => {
         const canvas = canvasRefrence.current;
@@ -59,8 +66,11 @@ function MobileCanvas(){
         context.strokeStyle = "black";
         context.lineWidth = 5;
         contextRefrence.current = context;
+        
     },[]);
-    //user
+    
+
+
     return(
         <div >
             <canvas 
