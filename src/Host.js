@@ -1,5 +1,5 @@
 import {useEffect,useState,useRef} from 'react';
-import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket.js';
+import { useWebSocket,ws } from 'react-use-websocket/dist/lib/use-websocket.js';
 import MobileCanvas from './mobilecanvaspage.js';
 //import MobileCanvas from "./mobilecanvaspage.js";
 
@@ -16,20 +16,15 @@ function Host(){
 
     
     const WS_URL = 'ws://localhost:8080'
-    const {sendJsonMessage} = useWebSocket(WS_URL,{
-        queryParams:{username}
+    const data = useWebSocket(WS_URL,{
+        queryParams:{username},
+        onMessage(ws,event){
+            console.log('Received WebSocket message:', ws.data);
+        }
     });
-    const getDrawingMessage = useRef(sendJsonMessage);
-    onmessage = function(drawUpdate){
-        console.log(drawUpdate);
-    }
+    //const getDrawingMessage = useRef(sendJsonMessage);
+   
     
-    useEffect(() =>{
-        getDrawingMessage.current({
-            message:canvasPageData
-    },[canvasPageData]);
-    
-},[canvasPageData]);
     
     return(
         <CanvasMimmic/>

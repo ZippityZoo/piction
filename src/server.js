@@ -11,6 +11,7 @@ const connections = {};//alot of extra metadata
 const users = {};//for our own user data
 const usersCanvas = {};
 const hostConnection = {};//holds host id
+const connectionsToSend = {}//queue of newly connected clients when the hos is not active
 var hostID;
 var hostConnected = false;
 //come back to this 
@@ -59,10 +60,11 @@ const broadcast = () => {
 server.listen(port, () =>{
     console.log(`Server listening on port ${port}`);
 })
-wss.on("connection", (connection, request) => {
+wss.on("connection", (connection, request) =>  {
     const {username} = url.parse(request.url,true).query;
     const uuid = uuidv4();
     if(username != 'RAQ'){
+        
         console.log(`${username} connected`);
         connections[uuid] = connection;
         users[uuid] = {
