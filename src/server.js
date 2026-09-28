@@ -94,7 +94,10 @@ async function initUser(connection,username,uuid){
         }
     }
     connection.on("message", draw => handleDrawing(draw,uuid));
-    connection.on("close", () => handleClose(uuid));
+    connection.on("close", () =>{
+        sendHostDisconnectMsg(uuid);
+        handleClose(uuid)
+    });
 }
 
 async function initHost(connection,username,uuid){
@@ -102,7 +105,10 @@ async function initHost(connection,username,uuid){
     hostID = uuid;
     hostConnection[0] = connection
     hostConnected = true;
-    connection.on("close", () => handleClose(uuid));
+    connection.on("close", () => {
+        handleClose(uuid)
+        
+    });
 }
 
 async function isHostConnected(){
@@ -118,6 +124,12 @@ function sendHostJoinMsg(uuid,username){
     
     hostConnection[0].send(newuser);
 
+}
+function sendHostDisconnectMsg(uuid,username){
+    if(hostConnected){
+        const user = JSON.stringify("Disconnect:"+uuid+":"+username);
+        hostConnection[0].send(user);
+    }
 }
 
 /*

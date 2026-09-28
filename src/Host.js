@@ -13,7 +13,6 @@ function Host(){
     const [newmsg,setMsg] = useState("");
     const [users,setUsers] = useState([]);//for rendering
     const pages = [];
-    const uuids = [];
     var i = 0;
     const [canvasPageData,setCanvasPageData] = useState("");
     const [canvasPages,setCanvasList] = useState([]);
@@ -35,19 +34,17 @@ function Host(){
    //add a user 
     //add a canvas page
     const addUser = (uuid,username) => {
-        uuids[i] = uuid;
         setUsers([...users,[uuid,username]])
         //users[uuid] = username;
         canvasPages[uuid] = null;
-        i++;
     }
 
-    function removeUser(){
-
+    function removeUser(uuid){
+        setUsers((users) => users.filter(user=>user[0] !== uuid));
     }
     const parseMessage = (message) => {
         const msg = JSON.parse(message);
-        console.log("parsed",msg); 
+        //console.log("parsed",msg); 
         newUser(msg);
         
     }
@@ -61,13 +58,15 @@ function Host(){
             if(userAlert[0] == "NewUser"){
                 addUser(userAlert[1],userAlert[2])//uuid,username
             }
+            if(userAlert[0]== "Disconnect"){
+                removeUser(userAlert[1]);
+            }
         }
         
         //return(ComponentContainer());
         
     }
     function CanvasMimic(props){
-        console.log(props[0])
         return(
             <div>
             <h1>User</h1>
