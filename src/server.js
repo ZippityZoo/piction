@@ -1,9 +1,7 @@
 import WebSocket, { WebSocketServer } from 'ws';
-import {Server} from "socket.io"
 import http from 'http';
 import url from 'url';
 import {v4 as uuidv4} from 'uuid';
-import { Socket } from 'dgram';
 const port = 8080;
 const server  = http.createServer();
 const wss =  new WebSocketServer({server});
@@ -17,12 +15,9 @@ var hostConnected = false;
 //come back to this 
 const handleDrawing = (bytes,uuid) => {
     if(uuid != hostID){
-        console.log("Start Handle drawing");
         const drawData = JSON.parse(bytes.toString());
         const user = users[uuid];
         user.state = drawData;
-        //console.log(drawData);
-        console.log("end Handle drawing");
     }
     //usersCanvas[uuid].push(drawData);
 
@@ -31,10 +26,16 @@ const handleDrawing = (bytes,uuid) => {
 };
 
 const handleClose = uuid => {
-    console.log(`${users[uuid].username} disconnected`)
-    delete connections[uuid];
-    delete users[uuid];
-
+    if(uuid === hostID){
+        console.log(`Host disconnected`);
+        delete hostConnection[0];
+        hostID = null;
+        hostConnected = false
+    }else{
+        console.log(`${users[uuid].username} disconnected`);
+        delete connections[uuid];
+        delete users[uuid];
+    }
     broadcast();
 
 }
@@ -45,9 +46,7 @@ const broadcast = () => {
         const data = JSON.stringify(users);
         const drawingData = JSON.stringify(usersCanvas[uuid].state)
         if(hostConnected){
-            console.log("start host send");
             hostConnection[0].send(data);
-            console.log("end host send");
         }
 
         connection.send(drawingData);
@@ -60,38 +59,66 @@ const broadcast = () => {
 server.listen(port, () =>{
     console.log(`Server listening on port ${port}`);
 })
+
+
 wss.on("connection", (connection, request) =>  {
     const {username} = url.parse(request.url,true).query;
     const uuid = uuidv4();
     if(username != 'RAQ'){
-        
-        console.log(`${username} connected`);
-        connections[uuid] = connection;
-        users[uuid] = {
-            username:username,
-            state: {
-                canvasData:null,
-            }
-        }
-        usersCanvas[uuid] = {
-            moving: {
-                x:0,
-                y:0
-            }
-        }
-    }else{
-        console.log(`Host connected`);
-        hostID = uuid;
-        hostConnection[0] = connection
-        hostConnected = true;
+        initUser(connection,username,uuid);
+    }else if(username == 'RAQ'){
+        initHost(connection,username,uuid); 
     }
     
-    connection.on("message", draw => handleDrawing(draw,uuid));
-    connection.on("close", () => handleClose(uuid));
+    //connection.on("message", draw => handleDrawing(draw,uuid));
+    
 
 
 })
 
+async function initUser(connection,username,uuid){
+    await isHostConnected(() => hostConnected === true);
+    console.log(`${username} connected`);
+    sendHostJoinMsg(uuid,username);
+    connections[uuid] = connection;
+    users[uuid] = {
+        username:username,
+        state: {
+            canvasData:null,
+        }
+    }
+    usersCanvas[uuid] = {
+        moving: {
+            x:0,
+            y:0
+        }
+    }
+    connection.on("message", draw => handleDrawing(draw,uuid));
+    connection.on("close", () => handleClose(uuid));
+}
+
+async function initHost(connection,username,uuid){
+    console.log(`Host connected`);
+    hostID = uuid;
+    hostConnection[0] = connection
+    hostConnected = true;
+    connection.on("close", () => handleClose(uuid));
+}
+
+async function isHostConnected(){
+    return new Promise ((resolve) => {
+        if(hostConnected){
+            resolve();
+        }
+    });
+}
+
+function sendHostJoinMsg(uuid,username){
+    const newuser = JSON.stringify("NewUser:"+uuid+":"+username);
+    
+    hostConnection[0].send(newuser);
+
+}
 
 /*
 connection.on("foo", foo => handleFoo(fooData,uuid));

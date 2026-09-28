@@ -1,6 +1,7 @@
 import {useEffect,useState,useRef} from 'react';
 import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket.js';
 import MobileCanvas from './mobilecanvaspage.js';
+import Login from './Login.js';
 //import {io} from 'socket.io-client';
 
 //const event = new Event('draw');
@@ -14,8 +15,9 @@ function Client({username}){
         
     }
     const WS_URL = 'ws://localhost:8080'
-    const {sendJsonMessage} = useWebSocket(WS_URL,{
-        queryParams:{username}
+    const {sendJsonMessage, readyState} = useWebSocket(WS_URL,{
+        queryParams:{username},
+        shouldReconnect: (closeEvent) => true,
     });
     const sendDrawingJsonMessage = useRef(sendJsonMessage);
     
@@ -23,11 +25,14 @@ function Client({username}){
             sendDrawingJsonMessage.current({
                 message:canvasPageData
             });
+
         
     },[canvasPageData]);
     return(
         <MobileCanvas drawData={sendPageData}/>
     );
+    
 }
+
 
 export default Client;

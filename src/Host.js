@@ -10,32 +10,78 @@ we need to make a canvas page each time someone joins
 
 function Host(){
     const username = 'RAQ'
-    const users = [];
+    const [newmsg,setMsg] = useState("");
+    const [users,setUsers] = useState([]);//for rendering
     const pages = [];
+    const uuids = [];
+    var i = 0;
     const [canvasPageData,setCanvasPageData] = useState("");
+    const [canvasPages,setCanvasList] = useState([]);
+    const [currentUsers,setCurrentUsers] = useState([]);
 
     
     const WS_URL = 'ws://localhost:8080'
     const data = useWebSocket(WS_URL,{
         queryParams:{username},
         onMessage(ws,event){
-            console.log('Received WebSocket message:', ws.data);
-        }
+            parseMessage(ws.data);
+
+        },
+        shouldReconnect: (closeEvent) => true,
+
+    
     });
     //const getDrawingMessage = useRef(sendJsonMessage);
-   
-    
-    
+   //add a user 
+    //add a canvas page
+    const addUser = (uuid,username) => {
+        uuids[i] = uuid;
+        setUsers([...users,[uuid,username]])
+        //users[uuid] = username;
+        canvasPages[uuid] = null;
+        i++;
+    }
+
+    function removeUser(){
+
+    }
+    const parseMessage = (message) => {
+        const msg = JSON.parse(message);
+        console.log("parsed",msg); 
+        newUser(msg);
+        
+    }
+    //tokenize new user string
+    //adduser
+    const  newUser = (newUser) => {
+        if(typeof newUser === 'string'){
+            const userAlert = newUser.split(':');
+            userAlert[0] = userAlert[0].replace(/^\"+|\"+$/g, '');
+            userAlert[2] = userAlert[2].replace(/^\"+|\"+$/g, '');
+            if(userAlert[0] == "NewUser"){
+                addUser(userAlert[1],userAlert[2])//uuid,username
+            }
+        }
+        
+        //return(ComponentContainer());
+        
+    }
+    function CanvasMimic(props){
+        console.log(props[0])
+        return(
+            <div>
+            <h1>User</h1>
+            <p>{props[0]}</p>
+            <p>{props[1]}</p>
+            </div>
+        );
+    }
     return(
-        <CanvasMimmic/>
-    );
-}
-//mimmics the canvas elements
-function CanvasMimmic(){
-    <canvas 
-            className={"player"}
-            id={"cv"}
-            style={{border : "5px solid black"}}
-            />
+            users.map((user,index) => (
+                <CanvasMimic key={index} {...user}/>
+            ))
+    )
+    
+    
 }
 export default Host;
