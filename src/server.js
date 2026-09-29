@@ -20,7 +20,7 @@ const handleDrawing = (bytes,uuid) => {
         user.state = drawData;
     }
     //usersCanvas[uuid].push(drawData);
-
+    
     //draw data , we want live drawings on our main page
     broadcast();
 };
