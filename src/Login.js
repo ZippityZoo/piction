@@ -1,4 +1,5 @@
 import {useState} from 'react';
+//need to check if host is connected
 function Login({onSubmit}){
     const [username, setUserName] = useState("");
     return(

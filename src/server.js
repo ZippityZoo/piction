@@ -101,6 +101,9 @@ async function initUser(connection,username,uuid){
 }
 
 async function initHost(connection,username,uuid){
+    if(hostConnected){
+        return;
+    }
     console.log(`Host connected`);
     hostID = uuid;
     hostConnection[0] = connection
